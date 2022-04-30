@@ -1177,7 +1177,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Inserisci Nome Giocatore
+  m_Text: Insert Player Name
 --- !u!222 &1875631468
 CanvasRenderer:
   m_ObjectHideFlags: 0

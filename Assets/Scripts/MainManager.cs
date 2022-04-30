@@ -12,20 +12,25 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    
     public Text CurrentPlayerName;
+    public Text BestPlayerName;
 
     public GameObject GameOverText;
 
     private bool m_Started = false;
 
     private int m_Points;
+
+    private string CurrentPlayer;
     private static string BestPlayer;
+    private static int BestScore;
 
     private bool m_GameOver = false;
 
     private void Awake()
     {
-        LoadPlayerName();
+        LoadGamePlayer();
     }
 
 
@@ -47,8 +52,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
-        CurrentPlayerName.text = PlayerDataHandle.Instance.PlayerName;
-        AddPlayer();
+        AddCurrentPlayer();
+        SetBestPlayer();
 
     }
 
@@ -83,38 +88,73 @@ public class MainManager : MonoBehaviour
         ScoreText.text = $"Score : {m_Points}";
     }
 
-    void AddPlayer()
+    void AddCurrentPlayer()
     {
-        BestPlayer = PlayerDataHandle.Instance.PlayerName;
-        CurrentPlayerName.text = $"Best Score Neme : {BestPlayer}";
-        Debug.Log(BestPlayer);
+        CurrentPlayer = PlayerDataHandle.Instance.PlayerName;
+        CurrentPlayerName.text = $"Current Player : {CurrentPlayer}";
     }
+
+    
 
     public void GameOver()
     {
         m_GameOver = true;
+        CheckBestPlayer();
         GameOverText.SetActive(true);
     }
 
-    /*da vedere*/
-    
+
+    private void CheckBestPlayer()
+    {
+        int CurrentScore = PlayerDataHandle.Instance.Score;
+
+        if (CurrentScore > BestScore)
+        {
+            BestPlayer = PlayerDataHandle.Instance.PlayerName;
+            BestScore = CurrentScore;
+
+            BestPlayerName.text = $"Best Score - {BestPlayer}: {BestScore}";
+
+            SaveGamePlayer(BestPlayer, BestScore);
+        }
+    }
+
+
+    private void SetBestPlayer()
+    {
+        if (BestPlayer == null && BestScore == 0)
+        {
+            BestPlayerName.text = "";
+        }
+        else
+        {
+            BestPlayerName.text = $"Best Score - {BestPlayer}: {BestScore}";
+        }
+
+    }
+
+
     [System.Serializable]
     class SaveData
     {
+        public int Score;
         public string NamePlayer;
-
     }
-    public void SavePlayerName()
+
+
+public void SaveGamePlayer(string player,int score)
     {
         SaveData data = new SaveData();
-        data.NamePlayer = BestPlayer;
+        
+        data.NamePlayer = player;
+        data.Score = score;
 
         string json = JsonUtility.ToJson(data);
 
         File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
     }
 
-    public void LoadPlayerName()
+    public void LoadGamePlayer()
     {
         string path = Application.persistentDataPath + "/savefile.json";
         if (File.Exists(path))
@@ -123,6 +163,7 @@ public class MainManager : MonoBehaviour
             SaveData data = JsonUtility.FromJson<SaveData>(json);
 
             BestPlayer = data.NamePlayer;
+            BestScore = data.Score;
         }
     }
 
