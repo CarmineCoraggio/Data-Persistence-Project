@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
+    public static MainManager Instance;
+    
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
@@ -23,8 +25,9 @@ public class MainManager : MonoBehaviour
     private int m_Points;
 
     private string CurrentPlayer;
-    private static string BestPlayer;
-    private static int BestScore;
+    
+    public static string BestPlayer;
+    public static int BestScore;
 
     private bool m_GameOver = false;
 
@@ -85,7 +88,7 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         PlayerDataHandle.Instance.Score = m_Points;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = $"Actual Score : {m_Points}";
     }
 
     void AddCurrentPlayer()
@@ -122,14 +125,16 @@ public class MainManager : MonoBehaviour
 
     private void SetBestPlayer()
     {
-        if (BestPlayer == null && BestScore == 0)
+        BestPlayerName.text = $"Best Score - {BestPlayer}: {BestScore}";
+        /*if (BestPlayer == null && BestScore == 0)
         {
             BestPlayerName.text = "";
         }
         else
         {
             BestPlayerName.text = $"Best Score - {BestPlayer}: {BestScore}";
-        }
+            
+        }*/
 
     }
 
@@ -164,7 +169,10 @@ public void SaveGamePlayer(string player,int score)
 
             BestPlayer = data.NamePlayer;
             BestScore = data.Score;
+
+            
         }
+        
     }
 
 }
